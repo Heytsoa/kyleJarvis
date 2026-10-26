@@ -43,7 +43,7 @@ function renderTask(task, day = localDateKey()) {
 function render() {
   const openTasks = data.tasks.filter((task) => !isTaskDone(task));
   $("#task-count").textContent = openTasks.length;
-  const taskItems = openTasks.slice(0, 4);
+  const taskItems = data.tasks.slice(0, 4);
   const noteItems = activeView === "notes" ? data.notes : data.notes.slice(0, 4);
   $("#task-list").innerHTML = taskItems.map((task) => renderTask(task)).join("");
   $("#note-list").innerHTML = noteItems.map((note) => `<article class="entry"><span class="nav-icon">▤</span><div class="entry-text">${escapeHTML(note.text)}<div class="entry-meta">${formatDate(note.createdAt)}</div></div><button class="delete-button" data-delete-note="${note.id}" aria-label="Supprimer la note">×</button></article>`).join("");
