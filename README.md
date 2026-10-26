@@ -19,6 +19,7 @@ Sur Windows, selon l'installation Python, la commande peut être `py server.py`.
 ## Première version
 
 - Ajouter et terminer des tâches.
+- Consulter une page dédiée qui regroupe toutes les tâches d’hier et d’aujourd’hui.
 - Définir une heure et choisir une répétition quotidienne ; terminer une tâche quotidienne la coche pour aujourd'hui, puis elle redevient à faire le jour suivant.
 - Enregistrer des notes.
 - Garder les données dans le navigateur, sur cet ordinateur.
