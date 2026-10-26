@@ -14,8 +14,8 @@ function loadData() {
       dueDate: task.dueDate || (task.createdAt ? localDateKey(new Date(task.createdAt)) : localDateKey()),
       completedDates: Array.isArray(task.completedDates) ? task.completedDates : (task.completedOn ? [task.completedOn] : []),
     })) : [];
-    return { tasks, notes: Array.isArray(saved.notes) ? saved.notes : [] };
-  } catch { return { tasks: [], notes: [] }; }
+    return { tasks, notes: Array.isArray(saved.notes) ? saved.notes : [], reminderHistory: Array.isArray(saved.reminderHistory) ? saved.reminderHistory : [] };
+  } catch { return { tasks: [], notes: [], reminderHistory: [] }; }
 }
 
 function saveData() { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
@@ -78,8 +78,8 @@ function refreshAfterDateChange() {
   render();
 }
 setInterval(refreshAfterDateChange, 30_000);
-window.addEventListener("focus", refreshAfterDateChange);
-document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshAfterDateChange(); });
+window.addEventListener("focus", () => { refreshAfterDateChange(); checkTaskReminders(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) { refreshAfterDateChange(); checkTaskReminders(); } });
 
 function setView(view) {
   activeView = view;
@@ -145,8 +145,83 @@ document.addEventListener("click", (event) => {
 });
 
 $("#clear-data").addEventListener("click", () => {
-  if (confirm("Effacer toutes les tâches et les notes de ce navigateur ?")) { data = { tasks: [], notes: [] }; saveData(); render(); }
+  if (confirm("Effacer toutes les tâches et les notes de ce navigateur ?")) { data = { tasks: [], notes: [], reminderHistory: [] }; saveData(); render(); }
 });
+
+
+const notificationButton = $("#enable-notifications");
+const notificationStatus = $("#notification-status");
+const reminderToast = $("#reminder-toast");
+let reminderToastTimer;
+
+function updateNotificationControls() {
+  if (!("Notification" in window)) {
+    notificationButton.disabled = true;
+    notificationButton.textContent = "Notifications indisponibles";
+    notificationStatus.textContent = "Ce navigateur ne prend pas en charge les notifications système.";
+    return;
+  }
+  const permission = Notification.permission;
+  notificationButton.textContent = permission === "granted" ? "Notifications activées" : permission === "denied" ? "Notifications bloquées" : "Activer les notifications";
+  notificationButton.disabled = permission === "granted" || permission === "denied";
+  notificationStatus.textContent = permission === "granted"
+    ? "Les rappels système sont activés sur cet appareil."
+    : permission === "denied"
+      ? "Autorisation refusée. Tu peux la modifier dans les réglages du navigateur."
+      : "Rappels dans la page; autorise les notifications pour être averti sur un autre onglet.";
+}
+
+notificationButton.addEventListener("click", async () => {
+  if (!("Notification" in window)) return;
+  try {
+    await Notification.requestPermission();
+    updateNotificationControls();
+  } catch {
+    notificationStatus.textContent = "Impossible d’activer les notifications dans ce navigateur.";
+  }
+});
+
+$("#dismiss-reminder").addEventListener("click", () => reminderToast.classList.add("hidden"));
+
+function showTaskReminder(task) {
+  const plannedTime = task.time || "";
+  $("#reminder-toast-text").textContent = `${task.text} · prévue à ${plannedTime}`;
+  reminderToast.classList.remove("hidden");
+  clearTimeout(reminderToastTimer);
+  reminderToastTimer = setTimeout(() => reminderToast.classList.add("hidden"), 30_000);
+  if ("Notification" in window && Notification.permission === "granted") {
+    const notice = new Notification("Mini Jarvis · dans 10 minutes", {
+      body: `${task.text} — prévue à ${plannedTime}`,
+      tag: `mini-jarvis-${task.id}-${localDateKey()}`,
+    });
+    notice.onclick = () => { window.focus(); setView("tasks"); notice.close(); };
+  }
+}
+
+function checkTaskReminders() {
+  const now = new Date();
+  const today = localDateKey(now);
+  const cutoff = now.getTime();
+  const reminderWindow = 10 * 60 * 1000;
+  const history = new Set(data.reminderHistory || []);
+  for (const task of data.tasks) {
+    if (!task.time || !taskOccursOn(task, today) || isTaskDone(task, today)) continue;
+    const [hour, minute] = task.time.split(":").map(Number);
+    if (!Number.isInteger(hour) || !Number.isInteger(minute)) continue;
+    const dueAt = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0, 0).getTime();
+    const reminderAt = dueAt - reminderWindow;
+    const key = `${task.id}:${today}`;
+    if (cutoff < reminderAt || cutoff >= dueAt || history.has(key)) continue;
+    history.add(key);
+    showTaskReminder(task);
+  }
+  data.reminderHistory = [...history].slice(-500);
+  saveData();
+}
+
+updateNotificationControls();
+checkTaskReminders();
+setInterval(checkTaskReminders, 15_000);
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const micButton = $("#mic-button");
