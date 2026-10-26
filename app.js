@@ -69,6 +69,18 @@ function renderTaskDays() {
   }
 }
 
+let renderedDay = localDateKey();
+function refreshAfterDateChange() {
+  const currentDay = localDateKey();
+  if (currentDay === renderedDay) return;
+  renderedDay = currentDay;
+  $("#today").textContent = new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "long" }).format(new Date());
+  render();
+}
+setInterval(refreshAfterDateChange, 30_000);
+window.addEventListener("focus", refreshAfterDateChange);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshAfterDateChange(); });
+
 function setView(view) {
   activeView = view;
   document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
