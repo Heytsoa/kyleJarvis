@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10141d">
   <title>Mini Jarvis</title>
-  <link rel="stylesheet" href="styles.css?v=tasks-20261026-r3">
+  <link rel="stylesheet" href="styles.css?v=tasks-20261026-r4">
 </head>
 <body>
   <div class="app-shell">
@@ -54,6 +54,12 @@
 
       <section id="task-page" class="task-page hidden" aria-label="Tâches d’hier et d’aujourd’hui">
         <div class="task-page-intro"><span class="eyebrow">SUIVI QUOTIDIEN</span><p>Toutes tes tâches sont classées par jour, y compris celles qui reviennent chaque jour.</p></div>
+        <section class="reminder-settings" aria-label="Rappels de tâches">
+          <div class="reminder-mark" aria-hidden="true">◷</div>
+          <div class="reminder-copy"><strong>Ne manque aucune tâche</strong><span>Un rappel apparaît 10 minutes avant l’heure prévue. Autorise les notifications pour être averti même sur un autre onglet.</span><small id="notification-status" aria-live="polite">Rappels prêts quand cette page est ouverte.</small></div>
+          <button id="enable-notifications" class="notification-button" type="button">Activer les notifications</button>
+        </section>
+        <div id="reminder-toast" class="reminder-toast hidden" role="status" aria-live="assertive"><span class="toast-icon" aria-hidden="true">◷</span><div><strong>À faire dans 10 minutes</strong><p id="reminder-toast-text"></p></div><button id="dismiss-reminder" type="button" aria-label="Fermer le rappel">×</button></div>
         <div class="task-day-grid">
           <section class="panel day-panel" aria-labelledby="yesterday-heading">
             <header class="day-heading"><div><span class="eyebrow">JOUR PRÉCÉDENT</span><h2 id="yesterday-heading">Hier</h2></div><span class="day-count" id="yesterday-count">0 tâche</span></header>
@@ -70,6 +76,6 @@
       <footer>Mini Jarvis <span>•</span> Prototype 01 <span class="footer-right">Tes données restent dans ce navigateur.</span></footer>
     </main>
   </div>
-  <script src="app.js?v=tasks-20261026-r3"></script>
+  <script src="app.js?v=tasks-20261026-r4"></script>
 </body>
 </html>
