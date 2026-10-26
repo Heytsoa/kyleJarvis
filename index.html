@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10141d">
+  <title>Mini Jarvis</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">J</div><div><strong>JARVIS</strong><span>assistant personnel</span></div></div>
+      <div class="nav-label">ESPACE</div>
+      <button class="nav-item active" data-view="home"><span class="nav-icon">⌂</span> Vue d’ensemble</button>
+      <button class="nav-item" data-view="tasks"><span class="nav-icon">✓</span> Mes tâches <span class="nav-count" id="task-count">0</span></button>
+      <button class="nav-item" data-view="notes"><span class="nav-icon">▤</span> Mes notes</button>
+      <div class="sidebar-bottom"><span class="status-dot"></span><span>Stockage local actif</span><button id="clear-data" title="Effacer toutes les données" aria-label="Effacer toutes les données">···</button></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar"><div><span class="eyebrow">VOTRE ESPACE PERSONNEL</span><h1 id="page-title">Bonjour, comment puis-je t’aider ?</h1></div><div class="date-chip" id="today"></div></header>
+
+      <section class="welcome-card">
+        <div class="welcome-copy"><div class="sparkle">✳</div><h2>On avance tranquillement,<br>une chose à la fois.</h2><p>Ajoute une tâche ou une note. Tu peux aussi utiliser le micro pour dicter.</p></div>
+        <div class="orb" role="group" aria-label="Heures de Madagascar et de France"><div class="orb-core"></div><i></i><b></b>
+          <div class="space-clocks">
+            <div class="space-clock"><div class="clock-copy"><strong>Antananarivo</strong><span>Madagascar</span></div><div class="clock-digits"><strong id="clock-mada">--:--</strong><span id="clock-mada-seconds">--</span></div></div>
+            <div class="space-clock"><div class="clock-copy"><strong>Paris</strong><span>France</span></div><div class="clock-digits"><strong id="clock-france">--:--</strong><span id="clock-france-seconds">--</span></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="composer-card" aria-label="Nouvelle tâche ou note">
+        <div class="composer-top"><span class="composer-icon">✦</span><span>Que veux-tu noter ?</span><span class="local-tag">PRIVÉ · SUR CET APPAREIL</span></div>
+        <form id="entry-form">
+          <label class="sr-only" for="entry-input">Écris une tâche ou une note</label>
+          <textarea id="entry-input" rows="2" placeholder="Ex. Préparer la réunion de lundi…" required></textarea>
+          <div class="schedule-row" id="task-schedule">
+            <label class="time-field" for="entry-time"><span>HEURE DE LA TÂCHE</span><input id="entry-time" type="time" aria-label="Heure prévue pour la tâche"></label>
+            <label class="repeat-option" for="repeat-daily"><span class="repeat-icon">↻</span><span class="repeat-copy"><strong>Tâche récurrente</strong><small>Répéter chaque jour</small></span><input id="repeat-daily" type="checkbox"></label>
+          </div>
+          <div class="composer-actions"><div class="mode-switch" role="group" aria-label="Type de contenu"><button type="button" class="mode active" data-mode="task">✓ Tâche</button><button type="button" class="mode" data-mode="note">▤ Note</button></div><div class="action-right"><span id="voice-status" class="voice-status" aria-live="polite"></span><button type="button" id="mic-button" class="mic-button" title="Dicter" aria-label="Dicter">♩</button><button class="submit-button" type="submit">Ajouter <span>↗</span></button></div></div>
+        </form>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel task-panel"><div class="panel-heading"><div><span class="eyebrow">À FAIRE</span><h2>Prochaines tâches</h2></div><button class="text-button" data-view="tasks">Tout voir <span>→</span></button></div><div id="task-list" class="item-list"></div><div id="empty-tasks" class="empty-state"><span>✧</span><p>Rien à faire pour l’instant.<br>Ajoute une tâche pour commencer.</p></div></div>
+        <div class="panel note-panel"><div class="panel-heading"><div><span class="eyebrow">À GARDER</span><h2>Notes récentes</h2></div><button class="text-button" data-view="notes">Tout voir <span>→</span></button></div><div id="note-list" class="item-list"></div><div id="empty-notes" class="empty-state"><span>▤</span><p>Tes idées importantes<br>apparaîtront ici.</p></div></div>
+      </section>
+      <footer>Mini Jarvis <span>•</span> Prototype 01 <span class="footer-right">Tes données restent dans ce navigateur.</span></footer>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
