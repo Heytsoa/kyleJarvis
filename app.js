@@ -53,20 +53,20 @@ function render() {
   const openTasks = data.tasks.filter((task) => !isTaskDone(task));
   $("#task-count").textContent = openTasks.length;
   const taskItems = data.tasks.slice(0, 4);
-  const noteItems = activeView === "notes" ? data.notes : data.notes.slice(0, 4);
+  const noteItems = data.notes.slice(0, 4);
   $("#task-list").innerHTML = taskItems.map((task) => renderTask(task)).join("");
   $("#note-list").innerHTML = noteItems.map(renderNote).join("");
   $("#empty-tasks").classList.toggle("hidden", taskItems.length > 0);
   $("#empty-notes").classList.toggle("hidden", noteItems.length > 0);
   renderTaskDays();
-  renderTaskPageNotes();
+  renderNotesPage();
 }
 
-function renderTaskPageNotes() {
-  const list = $("#task-notes-list");
+function renderNotesPage() {
+  const list = $("#notes-page-list");
   list.innerHTML = data.notes.map(renderNote).join("");
-  $("#task-notes-count").textContent = `${data.notes.length} note${data.notes.length === 1 ? "" : "s"}`;
-  $("#task-notes-empty").classList.toggle("hidden", data.notes.length > 0);
+  $("#notes-page-count").textContent = `${data.notes.length} note${data.notes.length === 1 ? "" : "s"}`;
+  $("#notes-page-empty").classList.toggle("hidden", data.notes.length > 0);
 }
 
 function renderTaskDays() {
@@ -102,8 +102,9 @@ function setView(view) {
   activeView = view;
   document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
   $("#page-title").textContent = view === "tasks" ? "Tes tâches" : view === "notes" ? "Tes notes" : "Bonjour, comment puis-je t’aider ?";
-  $("#home-page").classList.toggle("hidden", view === "tasks");
+  $("#home-page").classList.toggle("hidden", view !== "home");
   $("#task-page").classList.toggle("hidden", view !== "tasks");
+  $("#notes-page").classList.toggle("hidden", view !== "notes");
   render();
 }
 
