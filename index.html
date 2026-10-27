@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10141d">
   <title>Mini Jarvis</title>
-  <link rel="stylesheet" href="styles.css?v=tasks-20261026-r4">
+  <link rel="stylesheet" href="styles.css?v=tasks-20261027-r5">
 </head>
 <body>
   <div class="app-shell">
@@ -72,10 +72,15 @@
             <div id="today-empty" class="day-empty hidden"><span>✧</span><p>Aucune tâche prévue aujourd’hui.</p></div>
           </section>
         </div>
+        <section class="panel task-notes-panel" aria-labelledby="task-notes-heading">
+          <header class="day-heading"><div><span class="eyebrow">À GARDER</span><h2 id="task-notes-heading">Mes notes</h2></div><span class="day-count" id="task-notes-count">0 note</span></header>
+          <div id="task-notes-list" class="item-list"></div>
+          <div id="task-notes-empty" class="day-empty hidden"><span>▤</span><p>Aucune note pour l’instant.</p></div>
+        </section>
       </section>
       <footer>Mini Jarvis <span>•</span> Prototype 01 <span class="footer-right">Tes données restent dans ce navigateur.</span></footer>
     </main>
   </div>
-  <script src="app.js?v=tasks-20261026-r4"></script>
+  <script src="app.js?v=tasks-20261027-r5"></script>
 </body>
 </html>
