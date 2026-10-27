@@ -2,6 +2,7 @@ const STORE_KEY = "mini-jarvis-v1";
 let data = loadData();
 let mode = "task";
 let activeView = "home";
+let editingNoteId = null;
 
 const $ = (selector) => document.querySelector(selector);
 const entryInput = $("#entry-input");
@@ -40,13 +41,21 @@ function renderTask(task, day = localDateKey()) {
   return `<article class="entry ${done ? "done" : ""}"><button class="check-button" data-complete="${task.id}" data-day="${day}" aria-label="${done ? "Réouvrir" : "Terminer"} la tâche">${done ? "✓" : ""}</button><div class="entry-text">${escapeHTML(task.text)}<div class="entry-meta">${details}</div></div>${task.repeatDaily ? '<span class="repeat-badge" title="Tâche répétée chaque jour">↻ Quotidienne</span>' : ""}<button class="delete-button" data-delete-task="${task.id}" aria-label="Supprimer la tâche">×</button></article>`;
 }
 
+function renderNote(note) {
+  if (editingNoteId === note.id) {
+    return `<article class="entry note-entry note-editing"><label class="sr-only" for="note-edit-${note.id}">Modifier la note</label><textarea id="note-edit-${note.id}" class="note-edit-input" rows="3">${escapeHTML(note.text)}</textarea><div class="note-edit-actions"><button class="note-action primary" type="button" data-save-note="${note.id}">Enregistrer</button><button class="note-action" type="button" data-cancel-note>Annuler</button></div></article>`;
+  }
+  const dateLabel = note.updatedAt ? `Modifiée le ${formatDateTime(note.updatedAt)}` : formatDate(note.createdAt);
+  return `<article class="entry note-entry"><span class="nav-icon" aria-hidden="true">▤</span><div class="entry-text">${escapeHTML(note.text)}<div class="entry-meta">${dateLabel}</div></div><button class="note-action" type="button" data-edit-note="${note.id}" aria-label="Modifier la note">Modifier</button><button class="delete-button" data-delete-note="${note.id}" aria-label="Supprimer la note">×</button></article>`;
+}
+
 function render() {
   const openTasks = data.tasks.filter((task) => !isTaskDone(task));
   $("#task-count").textContent = openTasks.length;
   const taskItems = data.tasks.slice(0, 4);
   const noteItems = activeView === "notes" ? data.notes : data.notes.slice(0, 4);
   $("#task-list").innerHTML = taskItems.map((task) => renderTask(task)).join("");
-  $("#note-list").innerHTML = noteItems.map((note) => `<article class="entry"><span class="nav-icon">▤</span><div class="entry-text">${escapeHTML(note.text)}<div class="entry-meta">${formatDate(note.createdAt)}</div></div><button class="delete-button" data-delete-note="${note.id}" aria-label="Supprimer la note">×</button></article>`).join("");
+  $("#note-list").innerHTML = noteItems.map(renderNote).join("");
   $("#empty-tasks").classList.toggle("hidden", taskItems.length > 0);
   $("#empty-notes").classList.toggle("hidden", noteItems.length > 0);
   renderTaskDays();
@@ -55,7 +64,7 @@ function render() {
 
 function renderTaskPageNotes() {
   const list = $("#task-notes-list");
-  list.innerHTML = data.notes.map((note) => `<article class="entry"><span class="nav-icon" aria-hidden="true">▤</span><div class="entry-text">${escapeHTML(note.text)}<div class="entry-meta">${formatDate(note.createdAt)}</div></div><button class="delete-button" data-delete-note="${note.id}" aria-label="Supprimer la note">×</button></article>`).join("");
+  list.innerHTML = data.notes.map(renderNote).join("");
   $("#task-notes-count").textContent = `${data.notes.length} note${data.notes.length === 1 ? "" : "s"}`;
   $("#task-notes-empty").classList.toggle("hidden", data.notes.length > 0);
 }
@@ -137,6 +146,28 @@ document.addEventListener("click", (event) => {
   const complete = event.target.closest("[data-complete]");
   const deleteTask = event.target.closest("[data-delete-task]");
   const deleteNote = event.target.closest("[data-delete-note]");
+  const editNote = event.target.closest("[data-edit-note]");
+  const saveNote = event.target.closest("[data-save-note]");
+  const cancelNote = event.target.closest("[data-cancel-note]");
+  if (editNote) {
+    editingNoteId = editNote.dataset.editNote;
+    render();
+    const input = $(".note-edit-input");
+    input?.focus();
+    input?.setSelectionRange(input.value.length, input.value.length);
+  }
+  if (saveNote) {
+    const note = data.notes.find((item) => item.id === saveNote.dataset.saveNote);
+    const text = $(".note-edit-input")?.value.trim();
+    if (note && text) {
+      note.text = text;
+      note.updatedAt = new Date().toISOString();
+      editingNoteId = null;
+      saveData();
+      render();
+    }
+  }
+  if (cancelNote) { editingNoteId = null; render(); }
   if (complete) {
     const task = data.tasks.find((item) => item.id === complete.dataset.complete);
     if (task?.repeatDaily) {
@@ -149,6 +180,7 @@ document.addEventListener("click", (event) => {
   }
   if (deleteTask) data.tasks = data.tasks.filter((item) => item.id !== deleteTask.dataset.deleteTask);
   if (deleteNote) data.notes = data.notes.filter((item) => item.id !== deleteNote.dataset.deleteNote);
+  if (deleteNote && editingNoteId === deleteNote.dataset.deleteNote) editingNoteId = null;
   if (complete || deleteTask || deleteNote) { saveData(); render(); }
 });
 
