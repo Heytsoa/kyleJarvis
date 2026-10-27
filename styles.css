@@ -13,3 +13,6 @@
 @media(max-width:600px){.reminder-settings{align-items:flex-start;flex-wrap:wrap;gap:11px}.reminder-copy{min-width:calc(100% - 52px)}.notification-button{margin-left:47px}.reminder-toast{right:16px;bottom:16px}}
 
 .task-notes-panel{margin-top:17px;min-height:0}.task-notes-panel .day-heading{margin-bottom:13px}
+
+.note-entry{align-items:flex-start}.note-entry .nav-icon{flex:none;margin-top:1px}.note-action{flex:none;border:1px solid #38465c;border-radius:7px;background:#202938;color:#bdc9dc;padding:6px 9px;font:600 10px var(--font);cursor:pointer}.note-action:hover{border-color:#7088bd;background:#27354a;color:#e5ecfa}.note-action.primary{border-color:#91a8f0;background:#7895ea;color:#101827}.note-editing{display:grid;grid-template-columns:1fr;gap:9px}.note-edit-input{resize:vertical;width:100%;min-height:72px;padding:10px 11px;border:1px solid #3c4b64;border-radius:8px;background:#141b26;color:var(--text);font:12px/1.5 var(--font);outline:none}.note-edit-input:focus{border-color:#829ce4;box-shadow:0 0 0 2px #829ce422}.note-edit-actions{display:flex;justify-content:flex-end;gap:7px}
+@media(max-width:520px){.note-entry{gap:7px}.note-action{padding:6px 7px;font-size:9px}}
