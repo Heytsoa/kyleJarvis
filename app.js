@@ -50,6 +50,14 @@ function render() {
   $("#empty-tasks").classList.toggle("hidden", taskItems.length > 0);
   $("#empty-notes").classList.toggle("hidden", noteItems.length > 0);
   renderTaskDays();
+  renderTaskPageNotes();
+}
+
+function renderTaskPageNotes() {
+  const list = $("#task-notes-list");
+  list.innerHTML = data.notes.map((note) => `<article class="entry"><span class="nav-icon" aria-hidden="true">▤</span><div class="entry-text">${escapeHTML(note.text)}<div class="entry-meta">${formatDate(note.createdAt)}</div></div><button class="delete-button" data-delete-note="${note.id}" aria-label="Supprimer la note">×</button></article>`).join("");
+  $("#task-notes-count").textContent = `${data.notes.length} note${data.notes.length === 1 ? "" : "s"}`;
+  $("#task-notes-empty").classList.toggle("hidden", data.notes.length > 0);
 }
 
 function renderTaskDays() {
